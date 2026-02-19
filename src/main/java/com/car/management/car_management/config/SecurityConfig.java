@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -37,9 +38,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
-                .csrf(csrf -> csrf.disable())
+                // 🆕 ESSENCIAL: Ativa o CORS para evitar erros no console
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable()) // Desabilita CSRF para permitir POST de APIs externas
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint(unauthorizedHandler)
                 )
@@ -47,21 +49,21 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        // Libera login e registro para todos
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/users/**").permitAll()
 
-
+                        // Permite visualizar carros sem login
                         .requestMatchers(HttpMethod.GET, "/api/v1/cars/**").permitAll()
 
-
+                        // Exige Token JWT para criar ou editar carros
                         .requestMatchers(HttpMethod.POST, "/api/v1/cars/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/v1/cars/**").authenticated()
-
 
                         .anyRequest().authenticated()
                 );
 
-
+        // Adiciona o filtro JWT antes do filtro de autenticação padrão
         http.addFilterBefore(
                 jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class
@@ -70,4 +72,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-

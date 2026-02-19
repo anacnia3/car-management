@@ -22,9 +22,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/cars")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class CarController {
 
     private final CarService service;
+
 
     @PostMapping
     public ResponseEntity<?> create(
@@ -62,7 +64,6 @@ public class CarController {
         return ResponseEntity.ok(service.findById(id));
     }
 
-
     @PutMapping("/{id}")
     public ResponseEntity<?> update(
             @PathVariable Long id,
@@ -75,7 +76,6 @@ public class CarController {
 
         return ResponseEntity.ok(service.update(id, dto));
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Car {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,5 +20,12 @@ public class Car {
     private String color;
     private Integer year;
 
+    // 🆕 Data de criação automática para a listagem
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
