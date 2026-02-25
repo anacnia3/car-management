@@ -39,9 +39,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 🆕 ESSENCIAL: Ativa o CORS para evitar erros no console
+
                 .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable()) // Desabilita CSRF para permitir POST de APIs externas
+                .csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint(unauthorizedHandler)
                 )
@@ -49,26 +49,26 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Libera login e registro para todos
+
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/users/**").permitAll()
 
-                        // Permite visualizar carros sem login
+
                         .requestMatchers(HttpMethod.GET, "/api/v1/cars/**").permitAll()
 
-                        // Exige Token JWT para criar ou editar carros
+
                         .requestMatchers(HttpMethod.POST, "/api/v1/cars/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/v1/cars/**").authenticated()
 
                         .anyRequest().authenticated()
                 );
 
-        // Adiciona o filtro JWT antes do filtro de autenticação padrão
+
         http.addFilterBefore(
                 jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class
         );
-
         return http.build();
+
     }
 }
