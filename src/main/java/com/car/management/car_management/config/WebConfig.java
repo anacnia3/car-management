@@ -10,24 +10,19 @@ import java.util.List;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    /**
-     * Configuração para permitir filtros avançados na API (Specification)
-     */
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new SpecificationArgumentResolver());
     }
 
-    /**
-     * Configuração de CORS para liberar o acesso do Frontend (Next.js)
-     */
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // Libera todos os endpoints: /auth/login, /auth/register, /cars
-                .allowedOrigins("http://localhost:3000") // URL exata do seu frontend
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Permite o clique de salvar e criar
-                .allowedHeaders("*") // Permite o envio do Token JWT nos headers
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
                 .allowCredentials(true)
-                .maxAge(3600); // Cache da permissão por 1 hora
+                .maxAge(3600);
     }
 }
